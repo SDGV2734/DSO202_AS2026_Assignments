@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-cm-declarative
+  namespace: dso202-assignment-01
+data:
+  example: "created-with-apply"
