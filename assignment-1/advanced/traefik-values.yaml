@@ -1,0 +1,17 @@
+# Values for the official Traefik Helm chart.
+# Install with:
+# helm upgrade --install traefik traefik/traefik \
+#   --namespace traefik --create-namespace \
+#   --version 41.6.1 -f traefik-values.yaml
+service:
+  spec:
+    type: NodePort
+    externalTrafficPolicy: Cluster
+ports:
+  web:
+    # The original assignment frontend already owns NodePort 30080.
+    nodePort: 30081
+ingressClass:
+  enabled: true
+  isDefaultClass: false
+  name: traefik

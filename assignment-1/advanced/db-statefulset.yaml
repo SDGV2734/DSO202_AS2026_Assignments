@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: dso202-advanced
+  labels:
+    tier: database
+spec:
+  serviceName: db-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: database
+  template:
+    metadata:
+      labels:
+        tier: database
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: database
+          image: dso202-db:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: dso202-advanced-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dso202-advanced-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dso202-advanced-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-storage
+        labels:
+          tier: database
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

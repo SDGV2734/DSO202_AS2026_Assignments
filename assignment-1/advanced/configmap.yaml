@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dso202-advanced-config
+  namespace: dso202-advanced
+data:
+  DB_HOST: "db-svc"
+  DB_PORT: "5432"
+  DB_NAME: "taskdb"
+  POSTGRES_DB: "taskdb"
+  APP_PORT: "8080"
+  CORS_ORIGIN: "*"
+  # Empty means the browser calls the same-origin /api path handled by Ingress.
+  BACKEND_URL: ""

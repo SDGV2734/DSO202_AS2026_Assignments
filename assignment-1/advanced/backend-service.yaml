@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+  namespace: dso202-advanced
+  labels:
+    tier: backend
+spec:
+  type: ClusterIP
+  selector:
+    tier: backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
