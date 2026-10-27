@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "task-tracker.fullname" . }}-db
+  labels:
+    {{- include "task-tracker.labels" . | nindent 4 }}
+    tier: database
+spec:
+  serviceName: {{ include "task-tracker.databaseServiceName" . }}
+  replicas: {{ .Values.database.replicas }}
+  selector:
+    matchLabels:
+      {{- include "task-tracker.selectorLabels" (dict "root" . "tier" "database") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "task-tracker.selectorLabels" (dict "root" . "tier" "database") | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: database
+          image: "{{ .Values.images.database.repository }}:{{ .Values.images.database.tag }}"
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.database.service.port }}
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "task-tracker.configMapName" . }}
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "task-tracker.credentialsSecretName" . }}
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "task-tracker.credentialsSecretName" . }}
+                  key: POSTGRES_PASSWORD
+          resources:
+            {{- toYaml .Values.database.resources | nindent 12 }}
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-storage
+        labels:
+          tier: database
+      spec:
+        accessModes:
+          - {{ .Values.database.persistence.accessMode }}
+        {{- with .Values.database.persistence.storageClassName }}
+        storageClassName: {{ . | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.database.persistence.size }}

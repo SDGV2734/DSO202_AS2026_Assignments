@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "task-tracker.databaseServiceName" . }}
+  labels:
+    {{- include "task-tracker.labels" . | nindent 4 }}
+    tier: database
+spec:
+  clusterIP: None
+  selector:
+    {{- include "task-tracker.selectorLabels" (dict "root" . "tier" "database") | nindent 4 }}
+  ports:
+    - name: postgres
+      port: {{ .Values.database.service.port }}
+      targetPort: postgres

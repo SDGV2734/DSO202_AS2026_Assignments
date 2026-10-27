@@ -1,0 +1,79 @@
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullPolicy: IfNotPresent
+
+images:
+  database:
+    repository: dso202-db
+    tag: v1
+  backend:
+    repository: dso202-backend
+    tag: v1
+  frontend:
+    repository: dso202-frontend
+    tag: v1
+
+config:
+  databaseName: taskdb
+  databasePort: "5432"
+  applicationPort: "8080"
+  corsOrigin: "*"
+  backendUrl: ""
+
+# Create this Secret before installation, or set create=true and supply the
+# username/password at install time with --set-string. Do not commit passwords.
+credentials:
+  create: false
+  existingSecret: ""
+  username: ""
+  password: ""
+
+database:
+  replicas: 1
+  service:
+    port: 5432
+  persistence:
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+backend:
+  replicas: 1
+  service:
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+frontend:
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8080
+    nodePort: null
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+ingress:
+  enabled: true
+  className: traefik
+  host: helm-task-tracker.local
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web

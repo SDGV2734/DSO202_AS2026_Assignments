@@ -1,0 +1,15 @@
+config:
+  backendUrl: ""
+
+backend:
+  replicas: 2
+
+frontend:
+  service:
+    type: ClusterIP
+    nodePort: null
+
+ingress:
+  enabled: true
+  className: traefik
+  host: helm-task-tracker.local

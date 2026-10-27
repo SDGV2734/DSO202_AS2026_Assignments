@@ -1,0 +1,13 @@
+config:
+  backendUrl: http://localhost:18086
+
+backend:
+  replicas: 1
+
+frontend:
+  service:
+    type: NodePort
+    nodePort: 30083
+
+ingress:
+  enabled: false

@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dso202-unit4-local
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+configMapGenerator:
+  - name: task-config
+    behavior: merge
+    literals:
+      - BACKEND_URL=http://localhost:18084
+
+patches:
+  - path: frontend-nodeport.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: backend
+    path: backend-resources.json

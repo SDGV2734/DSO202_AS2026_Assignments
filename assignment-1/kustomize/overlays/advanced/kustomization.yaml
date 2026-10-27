@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: dso202-unit4-advanced
+
+resources:
+  - namespace.yaml
+  - ../../base
+  - ingress.yaml
+
+patches:
+  - path: backend-replicas.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: frontend
+    path: frontend-resources.json

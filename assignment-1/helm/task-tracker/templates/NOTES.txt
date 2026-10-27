@@ -1,0 +1,20 @@
+Task Tracker release {{ .Release.Name }} has been rendered for namespace {{ .Release.Namespace }}.
+
+{{- if .Values.ingress.enabled }}
+Ingress host: http://{{ .Values.ingress.host }}
+
+If Traefik is not directly reachable, run:
+  kubectl port-forward -n traefik svc/traefik 18087:80
+
+Then map {{ .Values.ingress.host }} to 127.0.0.1 and open:
+  http://{{ .Values.ingress.host }}:18087
+{{- else }}
+Frontend service type: {{ .Values.frontend.service.type }}
+
+For a local port-forward, run:
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "task-tracker.frontendServiceName" . }} 18085:{{ .Values.frontend.service.port }}
+{{- end }}
+
+Check the release with:
+  helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  kubectl get pods,svc,pvc -n {{ .Release.Namespace }}
